@@ -40,13 +40,12 @@ class TutorialViewTests(unittest.TestCase):
 
 class TestCodeFormat(unittest.TestCase):
     def test_pep8_conformance(self):
-        """Test that we conform to PEP8."""
-        log.warning('PEP8')
-        print('PEP')
+        log.warning('PEP8 Test')
         pep8style = pep8.StyleGuide()
         result = pep8style.check_files(['motmom/subscribers.py',
                                         'motmom/views.py',
                                         'motmom/security.py',
+                                        'motmom/service.py',
                                         'motmom/__init__.py',
                                         'motmom/tests.py'])
         self.assertEqual(result.total_errors, 0,
