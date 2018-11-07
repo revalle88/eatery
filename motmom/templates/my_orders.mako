@@ -27,7 +27,7 @@
     <td>${bid['price']} руб.</td>
     <td><img src = "${bid['qrcode']}"></td>
     <td >${bid['comment']}</td>
-    <td><a href="${request.route_url('close', id=bid['id'])}">Удалить</a></td>
+    <td><a href="${request.route_url('delete_order', id=bid['id'])}">Удалить</a></td>
   </tr>
   % endfor
     </tbody>
@@ -35,7 +35,5 @@
 % else:
   <li>There are no bids</li>
 % endif
-  <li class="last">
-    <a href="${request.route_url('new')}">Add a new bid</a>
-  </li>
+
 

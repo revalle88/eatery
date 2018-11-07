@@ -57,13 +57,13 @@ def main(global_config, **settings):
     # add mako templating
     config.include('pyramid_mako')
     # routes setup
-    config.add_route('list', '/list')
+    config.add_route('my_orders', '/list')
     config.add_route('product_list', '/products')
     config.add_route('order_list', '/orders')
     config.add_route('new', '/new')
     config.add_route('create_order', '/createorder')
-    config.add_route('close', '/close/{id}')
-    config.add_route('add_to_order', '/toorder/{id}')
+    config.add_route('delete_order', '/close/{id}')
+    config.add_route('add_to_cart', '/tocart/{id}')
     config.add_route('cart', '/cart')
     config.add_route('register', '/register')
     config.add_route('report', '/report')

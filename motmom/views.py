@@ -33,8 +33,8 @@ def product_list(request):
 
 
 # add product to order
-@view_config(route_name='add_to_order')
-def add_to_order(request):
+@view_config(route_name='add_to_cart')
+def add_to_cart(request):
     bid_id = int(request.matchdict['id'])
     session = request.session
     if 'order_list' in session:
@@ -44,8 +44,8 @@ def add_to_order(request):
     return HTTPFound(location=request.route_url('product_list'))
 
 
-@view_config(route_name='list', renderer='list.mako', permission='developer')
-def list_view(request):
+@view_config(route_name='my_orders', renderer='my_orders.mako', permission='developer')
+def my_orders(request):
     request.cur.execute('select id, food, price, qrcode, comment from bids' +
                         ' where user_id=%s', (request.authenticated_userid,))
     bids = [dict(id=row[0], food=row[1], price=row[2], qrcode=row[3],
@@ -117,19 +117,19 @@ def create_order(request):
         request.conn.commit()
         del request.session['order_list']
         request.session.flash('New bid was successfully added!')
-        return HTTPFound(location=request.route_url('list'))
+        return HTTPFound(location=request.route_url('my_orders'))
     else:
             request.session.flash('Please enter a your meal list!')
-    return HTTPFound(location=request.route_url('list'))
+    return HTTPFound(location=request.route_url('my_orders'))
 
 
-@view_config(route_name='close')
-def close_view(request):
+@view_config(route_name='delete_order')
+def delete_order(request):
     bid_id = int(request.matchdict['id'])
     request.cur.execute("delete from bids where id = %s", (bid_id,))
     request.conn.commit()
     request.session.flash('Bid was successfully deleted!')
-    return HTTPFound(location=request.route_url('list'))
+    return HTTPFound(location=request.route_url('my_orders'))
 
 
 @view_config(context='pyramid.exceptions.NotFound', renderer='notfound.mako')
@@ -203,7 +203,7 @@ def login(request):
 @view_config(route_name='logout')
 def logout(request):
     headers = forget(request)
-    return HTTPFound(location=request.route_url('list'), headers=headers)
+    return HTTPFound(location=request.route_url('home'), headers=headers)
 
 
 # @forbidden_view_config()

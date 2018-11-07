@@ -23,7 +23,7 @@
     <th scope="row">${product['id']}</th>
     <td>${product['name']}</td>
     <td>${product['price']} руб.</td>
-    <td><a href="${request.route_url('add_to_order', id=product['id'])}">Добавить в заказ</a></td>
+    <td><a href="${request.route_url('add_to_cart', id=product['id'])}">Добавить в заказ</a></td>
   </tr>
   % endfor
 % else:

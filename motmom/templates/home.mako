@@ -10,7 +10,7 @@
 <ul class="list-group home_list">
 <li class="list-group-item">Для клиентов:</li>
   <li class="list-group-item list-group-item-success"><a href="${request.route_url('product_list')}">Меню</a></li>
-  <li class="list-group-item list-group-item-primary"><a href="${request.route_url('list')}">Мои заказы</a></li>
+  <li class="list-group-item list-group-item-primary"><a href="${request.route_url('my_orders')}">Мои заказы</a></li>
 <br><br>
 <ul class="list-group home_list">
 <li class="list-group-item">Для сотрудников столовой:</li>
