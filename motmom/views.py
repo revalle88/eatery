@@ -67,60 +67,65 @@ def order_list(request):
 @view_config(route_name='cart', renderer='cart.mako', permission='developer')
 def cart_view(request):
     session = request.session
-    message = ''
-    bid_content = ''
-    summ = 0
     if 'order_list' in session:
-        log.warning(','.join(map(str, session['order_list'])))
-        request.cur.execute("select id, name, price from products" +
-                            " where id in (" +
-                            ','.join(map(str, session['order_list'])) + ")")
-        products = [dict(id=row[0], name=row[1], price=row[2])
-                    for row in request.cur.fetchall()]
-        for product in products:
-            bid_content = bid_content + product['name'] + '; '
-            summ = summ + product['price']
-        log.warning(summ)
-        return dict(
-            message=message,
-            bid_content=bid_content,
-            summ=summ,
-            products=products,
-        )
+        return get_user_order(session['order_list'], request.cur)
     else:
         message = "empty"
         return {'empty': 'empty'}
 
 
+def get_user_order(order_list, cursor):
+    message = ''
+    bid_content = ''
+    summ = 0
+    cursor.execute("select id, name, price from products" +
+                            " where id in (" +
+                            ','.join(map(str, order_list)) + ")")
+    products = [dict(id=row[0], name=row[1], price=row[2])
+                for row in cursor.fetchall()]
+    for product in products:
+        bid_content = bid_content + product['name'] + '; '
+        summ = summ + product['price']
+    log.warning(summ)
+    return dict(
+            message=message,
+            bid_content=bid_content,
+            summ=summ,
+            products=products,
+        )
+
+
 @view_config(route_name='create_order')
 def create_order(request):
     if 'form.submitted' in request.params:
-        price = request.params['price']
-        food = request.params['food']
-        comment = request.params['comment']
-        log.warning('price:  ')
-        log.warning(price)
-        qr = pyqrcode.create(str(price))
-        request.cur.execute(
-                "insert into bids (food, price, user_id, comment) " +
-                "values (%s, %s, %s, %s)",
-                (food, price, request.authenticated_userid, comment))
-        request.conn.commit()
-        request.cur.execute("select id from bids order by id DESC")
-        row = request.cur.fetchone()
-        bid_id = row[0]
-        qrpath = 'static/qr/qr'+str(bid_id)+'.png'
-        qrpathos = os.path.join(here, 'static')+'\\qr\\qr'+str(bid_id)+'.png'
-        qr.png(qrpathos, scale=5)
-        request.cur.execute(
-            "update bids set qrcode = %s where id = %s", (qrpath, bid_id))
-        request.conn.commit()
+        save_order(request)
         del request.session['order_list']
         request.session.flash('New bid was successfully added!')
         return HTTPFound(location=request.route_url('my_orders'))
     else:
             request.session.flash('Please enter a your meal list!')
     return HTTPFound(location=request.route_url('my_orders'))
+
+
+def save_order(request):
+    price = request.params['price']
+    food = request.params['food']
+    comment = request.params['comment']
+    request.cur.execute(
+            "insert into bids (food, price, user_id, comment) " +
+            "values (%s, %s, %s, %s)",
+            (food, price, request.authenticated_userid, comment))
+    request.conn.commit()
+    request.cur.execute("select id from bids order by id DESC")
+    row = request.cur.fetchone()
+    bid_id = row[0]
+    qr = pyqrcode.create('order id: ' + str(bid_id) + ' price: ' + str(price))
+    qrpath = 'static/qr/qr'+str(bid_id)+'.png'
+    qrpathos = os.path.join(here, 'static')+'\\qr\\qr'+str(bid_id)+'.png'
+    qr.png(qrpathos, scale=5)
+    request.cur.execute(
+        "update bids set qrcode = %s where id = %s", (qrpath, bid_id))
+    request.conn.commit()
 
 
 @view_config(route_name='delete_order')
