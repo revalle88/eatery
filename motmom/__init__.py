@@ -5,21 +5,13 @@ import psycopg2
 import pyqrcode
 import png
 
-
-from pyramid.config import Configurator
-
-
-from pyramid.httpexceptions import HTTPFound
-from pyramid.view import view_config
-
-import os
-
-
-from pyramid.config import Configurator
-from pyramid.session import UnencryptedCookieSessionFactoryConfig
-
 from wsgiref.simple_server import make_server
 
+from pyramid.config import Configurator
+from pyramid.httpexceptions import HTTPFound
+from pyramid.view import view_config
+from pyramid.config import Configurator
+from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.authentication import BasicAuthAuthenticationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
@@ -41,11 +33,10 @@ log = logging.getLogger(__file__)
 here = os.path.dirname(os.path.abspath(__file__))
 
 
-
 class Root(object):
     __acl__ = [(Allow, Everyone, 'view'),
                (Allow, 'developer', 'developer'),
-               (Allow, 'baker','baker')]
+               (Allow, 'baker', 'baker')]
 
     def __init__(self, request):
         pass
@@ -61,7 +52,8 @@ def main(global_config, **settings):
     # session factory
     session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreet')
     # configuration setup
-    config = Configurator(settings=settings, session_factory=session_factory, root_factory=Root)
+    config = Configurator(settings=settings, session_factory=session_factory,
+                          root_factory=Root)
     # add mako templating
     config.include('pyramid_mako')
     # routes setup
@@ -100,7 +92,7 @@ def main(global_config, **settings):
     config.add_request_method(get_user_name, 'user_name', reify=True)
 
     # scan for @view_config and @subscriber decorators
-    #config.scan()
+    # config.scan()
     config.scan('.views')
     config.scan('.subscribers')
     return config.make_wsgi_app()

@@ -16,17 +16,19 @@ logging.basicConfig()
 log = logging.getLogger(__file__)
 here = os.path.dirname(os.path.abspath(__file__))
 
+
 # views
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
     return {}
 
 
-@view_config(route_name='product_list', renderer='product_list.mako', permission='developer')
+@view_config(route_name='product_list', renderer='product_list.mako',
+             permission='developer')
 def product_list(request):
     request.cur.execute('select id, name, price from products')
     products = [dict(id=row[0], name=row[1], price=row[2])
-             for row in request.cur.fetchall()]
+                for row in request.cur.fetchall()]
     return {'products': products}
 
 
@@ -42,47 +44,52 @@ def add_to_order(request):
     return HTTPFound(location=request.route_url('product_list'))
 
 
-
 @view_config(route_name='list', renderer='list.mako', permission='developer')
 def list_view(request):
-    request.cur.execute('select id, food, price, qrcode, comment from bids where user_id=%s', (request.authenticated_userid,))
-    bids = [dict(id=row[0], food=row[1], price=row[2], qrcode=row[3], comment=row[4])
-             for row in request.cur.fetchall()]
+    request.cur.execute('select id, food, price, qrcode, comment from bids' +
+                        ' where user_id=%s', (request.authenticated_userid,))
+    bids = [dict(id=row[0], food=row[1], price=row[2], qrcode=row[3],
+                 comment=row[4]) for row in request.cur.fetchall()]
     return {'bids': bids}
 
 
-@view_config(route_name='order_list', renderer='order_list.mako', permission='baker')
+@view_config(route_name='order_list', renderer='order_list.mako',
+             permission='baker')
 def order_list(request):
-    request.cur.execute('select b.id, b.food, b.price, b.comment, u.username from bids as b'
-                        +' INNER JOIN users as u ON u.id = b.user_id')
-    bids = [dict(id=row[0], food=row[1], price=row[2], comment=row[3], username=row[4])
-             for row in request.cur.fetchall()]
+    request.cur.execute('select b.id, b.food, b.price, b.comment, u.username' +
+                        ' from bids as b INNER JOIN users as u ' +
+                        'ON u.id = b.user_id')
+    bids = [dict(id=row[0], food=row[1], price=row[2], comment=row[3],
+            username=row[4]) for row in request.cur.fetchall()]
     return {'bids': bids}
+
 
 @view_config(route_name='cart', renderer='cart.mako', permission='developer')
 def cart_view(request):
     session = request.session
     message = ''
-    bid_content=''
-    summ=0
+    bid_content = ''
+    summ = 0
     if 'order_list' in session:
         log.warning(','.join(map(str, session['order_list'])))
-        request.cur.execute("select id, name, price from products"
-                            + " where id in ("+','.join(map(str, session['order_list']))+")")
-        products = [dict(id=row[0], name=row[1], price=row[2]) for row in request.cur.fetchall()]
+        request.cur.execute("select id, name, price from products" +
+                            " where id in (" +
+                            ','.join(map(str, session['order_list'])) + ")")
+        products = [dict(id=row[0], name=row[1], price=row[2])
+                    for row in request.cur.fetchall()]
         for product in products:
             bid_content = bid_content + product['name'] + '; '
             summ = summ + product['price']
         log.warning(summ)
-        return  dict(
-        message=message,
-        bid_content=bid_content,
-        summ=summ,
-        products=products,
+        return dict(
+            message=message,
+            bid_content=bid_content,
+            summ=summ,
+            products=products,
         )
     else:
-        message ="empty"
-        return {'empty':'empty'}
+        message = "empty"
+        return {'empty': 'empty'}
 
 
 @view_config(route_name='create_order')
@@ -95,8 +102,9 @@ def create_order(request):
         log.warning(price)
         qr = pyqrcode.create(str(price))
         request.cur.execute(
-            "insert into bids (food, price, user_id, comment) values (%s, %s, %s, %s)"
-            , (food, price, request.authenticated_userid, comment))
+                "insert into bids (food, price, user_id, comment) " +
+                "values (%s, %s, %s, %s)",
+                (food, price, request.authenticated_userid, comment))
         request.conn.commit()
         request.cur.execute("select id from bids order by id DESC")
         row = request.cur.fetchone()
@@ -113,34 +121,6 @@ def create_order(request):
     else:
             request.session.flash('Please enter a your meal list!')
     return HTTPFound(location=request.route_url('list'))
-
-
-
-@view_config(route_name='new', renderer='new.mako')
-def new_view(request):
-    if request.authenticated_userid is None or request.user_role not in ('developer', 'basic'):
-        raise HTTPForbidden
-    if request.method == 'POST':
-        if request.POST.get('food'):
-            price = random.randint(1,101)
-            qr = pyqrcode.create(str(price))
-            request.cur.execute(
-                "insert into bids (food, price, user_id) values (%s, %s, %s)"
-                , (request.POST['food'], price, request.authenticated_userid))
-            request.conn.commit()
-            request.cur.execute("select id from bids order by id DESC")
-            row = request.cur.fetchone()
-            bid_id = row[0]
-            qrpath = 'static/qr/qr'+str(bid_id)+'.png'
-            qr.png(qrpath, scale=5)
-            request.cur.execute(
-                "update bids set qrcode = %s where id = %s", (qrpath, bid_id))
-            request.conn.commit()
-            request.session.flash('New bid was successfully added!')
-            return HTTPFound(location=request.route_url('list'))
-        else:
-            request.session.flash('Please enter a your meal list!')
-    return {}
 
 
 @view_config(route_name='close')
@@ -161,12 +141,12 @@ def notfound_view(request):
 # baker views
 @view_config(route_name='report', renderer='report.mako', permission='baker',)
 def report_view(request):
-    request.cur.execute("Select u.username, SUM(b.price) from bids b"
-                        +" INNER JOIN users u ON u.id = b.user_id"
-                        +" GROUP BY u.username")
-    records = [dict(username=row[0], total=row[1]) for row in request.cur.fetchall()]
-    # Select u.username, SUM(b.price) from bids b INNER JOIN users u ON u.id = b.user_id GROUP BY u.username
-    return {'records':records}
+    request.cur.execute("Select u.username, SUM(b.price) from bids b" +
+                        " INNER JOIN users u ON u.id = b.user_id" +
+                        " GROUP BY u.username")
+    records = [dict(username=row[0], total=row[1])
+               for row in request.cur.fetchall()]
+    return {'records': records}
 
 
 # Registration
@@ -176,8 +156,9 @@ def register_view(request):
         username = request.params['username']
         password = request.params['password']
         user_role = request.params['role']
-        request.cur.execute("insert into users (username, password, role) values (%s, %s, %s)"
-                            , (username, password, user_role))
+        request.cur.execute("insert into users (username, password, role) " +
+                            "values (%s, %s, %s)",
+                            (username, password, user_role))
         request.conn.commit()
         request.session.flash('Пользователь зарегистрирован!')
         return HTTPFound(location=request.route_url('login'))
@@ -199,8 +180,8 @@ def login(request):
         username = request.params['username']
         password = request.params['password']
         request.cur.execute(
-            "select id from users where username = %s and password = %s"
-            , (username, password,))
+            "select id from users where username = %s and password = %s",
+            (username, password,))
         if request.cur.rowcount > 0:
             rows = request.cur.fetchone()
             user_id = rows[0]
@@ -208,8 +189,8 @@ def login(request):
             log.warning('user_id:  ')
             log.warning(user_id)
             headers = remember(request, user_id)
-            return HTTPFound(location=next_url
-                            , headers=headers)
+            return HTTPFound(location=next_url,
+                             headers=headers)
         message = 'Failed login'
     return dict(
         message=message,
@@ -225,7 +206,7 @@ def logout(request):
     return HTTPFound(location=request.route_url('list'), headers=headers)
 
 
-#@forbidden_view_config()
+# @forbidden_view_config()
 def forbidden_view(request):
     if request.authenticated_userid is None:
         response = HTTPUnauthorized()
