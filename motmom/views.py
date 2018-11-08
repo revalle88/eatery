@@ -177,7 +177,6 @@ def forbidden_view(request):
     if request.authenticated_userid is None:
         response = HTTPUnauthorized()
         response.headers.update(forget(request))
-    # user is logged in but doesn't have permissions, reject wholesale
     else:
         response = HTTPForbidden()
     return response

@@ -29,11 +29,12 @@ ALTER TABLE bids
 
 
 
-insert into products (id, name, description, price) values (0, 'Суп Гороховый', 'descripiton', 23);
-insert into products (id, name, description, price) values (1, 'Картофель', 'descripiton', 32);
-insert into products (id, name, description, price) values (2, 'Хлеб', 'descripiton', 7);
-insert into products (id, name, description, price) values (3, 'Чай', 'descripiton', 12);
-insert into products (id, name, description, price) values (4, 'Компот', 'descripiton', 15);
+insert into products (id, name, description, price) values (0, 'Soup', 'descripiton', 23);
+insert into products (id, name, description, price) values (1, 'Potatoe', 'descripiton', 32);
+insert into products (id, name, description, price) values (2, 'Bread', 'descripiton', 7);
+insert into products (id, name, description, price) values (3, 'Tea', 'descripiton', 12);
+insert into products (id, name, description, price) values (4, 'Coffee', 'descripiton', 15);
+insert into products (id, name, description, price) values (5, 'Cheesecake', 'descripiton', 25);
 
 /*
 insert into users (id, username, password, role) values (0, 'baker', 'baker', 'baker');
