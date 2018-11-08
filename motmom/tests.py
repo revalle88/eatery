@@ -10,7 +10,7 @@ log = logging.getLogger(__file__)
 here = os.path.dirname(os.path.abspath(__file__))
 
 
-class TutorialFunctionalTests(unittest.TestCase):
+class MotmomFunctionalTests(unittest.TestCase):
     def setUp(self):
         from motmom import main
         app = main({})
@@ -18,24 +18,9 @@ class TutorialFunctionalTests(unittest.TestCase):
 
         self.testapp = TestApp(app)
 
-    def test_hello_world(self):
+    def test_home_page(self):
         res = self.testapp.get('/', status=200)
         self.assertIn(b'Pyramid Motmom', res.body)
-
-
-class TutorialViewTests(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-
-    def test_home(self):
-        from .views import home
-        request = testing.DummyRequest()
-        resp = home(request)
-        log.warning(resp)
-        # self.assertEqual(resp.status_code, 200)
 
 
 class TestCodeFormat(unittest.TestCase):
@@ -49,4 +34,4 @@ class TestCodeFormat(unittest.TestCase):
                                         'motmom/__init__.py',
                                         'motmom/tests.py'])
         self.assertEqual(result.total_errors, 0,
-                         "Found code style errors (and warnings).")
+                         'Found code style errors (and warnings).')

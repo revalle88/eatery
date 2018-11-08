@@ -1,29 +1,18 @@
 import os
 import logging
-import sqlite3
-import psycopg2
-import pyqrcode
-import png
+
 
 from wsgiref.simple_server import make_server
 
-from pyramid.config import Configurator
-from pyramid.httpexceptions import HTTPFound
-from pyramid.view import view_config
 from pyramid.config import Configurator
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.authentication import BasicAuthAuthenticationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.httpexceptions import HTTPForbidden
-from pyramid.httpexceptions import HTTPUnauthorized
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow, Everyone
 from pyramid.security import Authenticated
-from pyramid.security import (
-    remember,
-    forget,
-    )
+
 
 from .security import groupfinder, get_user_role, get_user_name
 

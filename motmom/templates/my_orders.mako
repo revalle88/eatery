@@ -5,7 +5,7 @@
     Мои заказы
 </%block>
 
-<h1>Your Bid List</h1>
+<h2>Список моих заказов</h2>
 
 <table class="table bidlist">
   <thead>
