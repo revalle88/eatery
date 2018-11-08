@@ -8,6 +8,7 @@ requires = [
     'psycopg2',
     'pyqrcode',
     'pypng',
+    'pyyaml',
 ]
 
 # List of dependencies installed via `pip install -e ".[dev]"`

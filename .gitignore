@@ -1,5 +1,3 @@
-motmom.egg-info/
-tutorial.egg_info/
 .pytest_cache/
 __pycache__/
 *.png

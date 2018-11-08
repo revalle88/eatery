@@ -1,0 +1,6 @@
+motmom.egg-info/PKG-INFO
+motmom.egg-info/SOURCES.txt
+motmom.egg-info/dependency_links.txt
+motmom.egg-info/entry_points.txt
+motmom.egg-info/requires.txt
+motmom.egg-info/top_level.txt

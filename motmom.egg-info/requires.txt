@@ -1,0 +1,12 @@
+pyramid
+waitress
+psycopg2
+pyqrcode
+pypng
+pyyaml
+
+[dev]
+pyramid_debugtoolbar
+pytest
+webtest
+pep8

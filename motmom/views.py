@@ -56,17 +56,6 @@ def my_orders(request):
     return {'bids': bids}
 
 
-@view_config(route_name='order_list', renderer='order_list.mako',
-             permission='baker')
-def order_list(request):
-    request.cur.execute('select b.id, b.food, b.price, b.comment, u.username' +
-                        ' from bids as b INNER JOIN users as u ' +
-                        'ON u.id = b.user_id')
-    bids = [dict(id=row[0], food=row[1], price=row[2], comment=row[3],
-            username=row[4]) for row in request.cur.fetchall()]
-    return {'bids': bids}
-
-
 @view_config(route_name='cart', renderer='cart.mako', permission='developer')
 def cart_view(request):
     session = request.session
@@ -113,6 +102,17 @@ def report_view(request):
     records = [dict(username=row[0], total=row[1])
                for row in request.cur.fetchall()]
     return {'records': records}
+
+
+@view_config(route_name='order_list', renderer='order_list.mako',
+             permission='baker')
+def order_list(request):
+    request.cur.execute('select b.id, b.food, b.price, b.comment, u.username' +
+                        ' from bids as b INNER JOIN users as u ' +
+                        'ON u.id = b.user_id')
+    bids = [dict(id=row[0], food=row[1], price=row[2], comment=row[3],
+            username=row[4]) for row in request.cur.fetchall()]
+    return {'bids': bids}
 
 
 # Registration
