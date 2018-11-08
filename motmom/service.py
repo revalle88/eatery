@@ -14,11 +14,11 @@ def save_order(request):
     food = request.params['food']
     comment = request.params['comment']
     request.cur.execute(
-            "insert into bids (food, price, user_id, comment) " +
-            "values (%s, %s, %s, %s)",
+            'insert into bids (food, price, user_id, comment) '
+            'values (%s, %s, %s, %s)',
             (food, price, request.authenticated_userid, comment))
     request.conn.commit()
-    request.cur.execute("select id from bids order by id DESC")
+    request.cur.execute('select id from bids order by id DESC')
     row = request.cur.fetchone()
     bid_id = row[0]
     qr = pyqrcode.create('order id: ' + str(bid_id) + ' price: ' + str(price))
@@ -26,7 +26,7 @@ def save_order(request):
     qrpathos = os.path.join(here, 'static')+'\\qr\\qr'+str(bid_id)+'.png'
     qr.png(qrpathos, scale=5)
     request.cur.execute(
-        "update bids set qrcode = %s where id = %s", (qrpath, bid_id))
+        'update bids set qrcode = %s where id = %s', (qrpath, bid_id))
     request.conn.commit()
 
 
@@ -34,9 +34,8 @@ def get_user_order(order_list, cursor):
     message = ''
     bid_content = ''
     summ = 0
-    cursor.execute("select id, name, price from products" +
-                   " where id in (" +
-                   ','.join(map(str, order_list)) + ")")
+    cursor.execute('select id, name, price from products '
+                   'where id in (' + ','.join(map(str, order_list)) + ')')
     products = [dict(id=row[0], name=row[1], price=row[2])
                 for row in cursor.fetchall()]
     for product in products:

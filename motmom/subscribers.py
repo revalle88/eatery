@@ -44,7 +44,7 @@ def application_created_subscriber(event):
 
 
 def db_connect():
-    with open(os.path.join(here, "config.yml"), 'r') as ymlfile:
+    with open(os.path.join(here, 'config.yml'), 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
         try:
             conn = psycopg2.connect(database=cfg['dbname'],

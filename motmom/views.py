@@ -49,8 +49,8 @@ def add_to_cart(request):
 @view_config(route_name='my_orders', renderer='my_orders.mako',
              permission='developer')
 def my_orders(request):
-    request.cur.execute('select id, food, price, qrcode, comment from bids' +
-                        ' where user_id=%s', (request.authenticated_userid,))
+    request.cur.execute('select id, food, price, qrcode, comment from bids '
+                        'where user_id=%s', (request.authenticated_userid,))
     bids = [dict(id=row[0], food=row[1], price=row[2], qrcode=row[3],
                  comment=row[4]) for row in request.cur.fetchall()]
     return {'bids': bids}
@@ -94,11 +94,11 @@ def notfound_view(request):
 
 
 # baker views
-@view_config(route_name='report', renderer='report.mako', permission='baker',)
+@view_config(route_name='report', renderer='report.mako', permission='baker')
 def report_view(request):
-    request.cur.execute("Select u.username, SUM(b.price) from bids b" +
-                        " INNER JOIN users u ON u.id = b.user_id" +
-                        " GROUP BY u.username")
+    request.cur.execute('Select u.username, SUM(b.price) from bids b '
+                        'INNER JOIN users u ON u.id = b.user_id '
+                        'GROUP BY u.username')
     records = [dict(username=row[0], total=row[1])
                for row in request.cur.fetchall()]
     return {'records': records}
@@ -107,8 +107,8 @@ def report_view(request):
 @view_config(route_name='order_list', renderer='order_list.mako',
              permission='baker')
 def order_list(request):
-    request.cur.execute('select b.id, b.food, b.price, b.comment, u.username' +
-                        ' from bids as b INNER JOIN users as u ' +
+    request.cur.execute('select b.id, b.food, b.price, b.comment, u.username '
+                        'from bids as b INNER JOIN users as u '
                         'ON u.id = b.user_id')
     bids = [dict(id=row[0], food=row[1], price=row[2], comment=row[3],
             username=row[4]) for row in request.cur.fetchall()]
@@ -122,8 +122,8 @@ def register_view(request):
         username = request.params['username']
         password = request.params['password']
         user_role = request.params['role']
-        request.cur.execute("insert into users (username, password, role) " +
-                            "values (%s, %s, %s)",
+        request.cur.execute('insert into users (username, password, role) '
+                            'values (%s, %s, %s)',
                             (username, password, user_role))
         request.conn.commit()
         request.session.flash('Пользователь зарегистрирован!')
@@ -146,7 +146,7 @@ def login(request):
         username = request.params['username']
         password = request.params['password']
         request.cur.execute(
-            "select id from users where username = %s and password = %s",
+            'select id from users where username = %s and password = %s',
             (username, password,))
         if request.cur.rowcount > 0:
             rows = request.cur.fetchone()
